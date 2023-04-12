@@ -404,7 +404,7 @@ def Trho_func(logm200, c, z):
     omega_m   = cosmo.Om(z)
     rho_bar_b = (rho_crit * omega_b / const.m_p ).to(u.cm**-3).value
     
-    T_rho = T_rho_init(z)
+    T_rho = Trho_init(z)
     
     #print(z, logm200, omega_b/omega_m)
     
@@ -447,7 +447,7 @@ def Trho_func_2(logm200, c, z, rho_c):
     omega_m   = cosmo.Om(z)
     rho_bar_b = (rho_crit * omega_b / const.m_p ).to(u.cm**-3).value
     
-    T_rho = T_rho_init(z)
+    T_rho = Trho_init(z)
     
     #print(z, logm200, omega_b/omega_m)
     
@@ -480,7 +480,7 @@ def Trho_func_2_adb(logm200, c, z, rho_c):
     omega_m   = cosmo.Om(z)
     rho_bar_b = (rho_crit * omega_b / const.m_p ).to(u.cm**-3).value
     
-    T_rho = T_rho_init_adb(z)
+    T_rho = Trho_EOS(z)
     
     #print(z, logm200, omega_b/omega_m)
     
@@ -514,7 +514,7 @@ def Trho_func_concentration(c, logm200, z):
     omega_m   = cosmo.Om(z)
     rho_bar_b = (rho_crit * omega_b / const.m_p ).to(u.cm**-3).value
     
-    T_rho = T_rho_init(z)
+    T_rho = Trho_init(z)
     
     #print(z, logm200, omega_b/omega_m)
     
@@ -557,7 +557,7 @@ def Trho_func_concentration_central(rho_norm, c, logm200, z):
     omega_m   = cosmo.Om(z)
     rho_bar_b = (rho_crit * omega_b / const.m_p ).to(u.cm**-3).value
     
-    T_rho = T_rho_init(z)
+    T_rho = Trho_init(z)
     
     #print(z, logm200, omega_b/omega_m)
     
@@ -596,7 +596,7 @@ def Trho_func_concentration_central_adb(c, logm200, z):
     omega_m   = cosmo.Om(z)
     rho_bar_b = (rho_crit * omega_b / const.m_p ).to(u.cm**-3).value
     
-    T_rho = T_rho_init_adb(z)
+    T_rho = Trho_EOS(z)
     
     #print(z, logm200, omega_b/omega_m)
     
@@ -637,7 +637,7 @@ def Trho_func_ludlow(logm200, z):
     omega_m   = cosmo.Om(z)
     rho_bar_b = (rho_crit * omega_b / const.m_p ).to(u.cm**-3).value
     
-    T_rho = T_rho_init(z)
+    T_rho = Trho_init(z)
     
     #print(z, logm200, omega_b/omega_m)
     
@@ -684,7 +684,7 @@ def Trho_adb_func_ludlow(logm200, z):
     omega_m   = cosmo.Om(z)
     rho_bar_b = (rho_crit * omega_b / const.m_p ).to(u.cm**-3).value
     
-    T_rho = T_rho_init_adb(z)
+    T_rho = Trho_EOS(z)
     
     #print(z, logm200, omega_b/omega_m)
     
@@ -732,7 +732,7 @@ def Trho_func_ludlow_2(logm200, z, rho_c):
     omega_m   = cosmo.Om(z)
     rho_bar_b = (rho_crit * omega_b / const.m_p ).to(u.cm**-3).value
     
-    T_rho = T_rho_init(z)
+    T_rho = Trho_init(z)
     
     #print(z, logm200, c)
     
@@ -770,7 +770,7 @@ def Trho_adb_func_ludlow_2(logm200, z, rho_c):
     omega_m   = cosmo.Om(z)
     rho_bar_b = (rho_crit * omega_b / const.m_p ).to(u.cm**-3).value 
     
-    T_rho = T_rho_init_adb(z)
+    T_rho = Trho_EOS(z)
     
     #print(z, logm200, c)
     
@@ -815,7 +815,7 @@ def Trho_adb_func_ludlow_2_norm_gas(logm200, z, rho_c):
     omega_m   = cosmo.Om(z)
     rho_bar_b = (rho_crit * omega_b / const.m_p ).to(u.cm**-3).value
     
-    T_rho = T_rho_init_adb(z)  #lambda x: np.zeros(len(x)) + 10**4 #
+    T_rho = Trho_EOS(z)  #lambda x: np.zeros(len(x)) + 10**4 #
     
     print(z, logm200)
     
@@ -884,7 +884,7 @@ def Trho_func_ludlow_central(rho_norm, logm200, z):
     omega_m   = cosmo.Om(z)
     rho_bar_b = (rho_crit * omega_b / const.m_p ).to(u.cm**-3).value
     
-    T_rho = T_rho_init(z)
+    T_rho = Trho_init(z)
     
     #print(z, logm200, omega_b/omega_m)
     
@@ -967,7 +967,7 @@ def Trho_func_ludlow_central_adb(logm200, z):
     omega_m   = cosmo.Om(z)
     rho_bar_b = (rho_crit * omega_b / const.m_p ).to(u.cm**-3).value
     
-    T_rho = T_rho_init_adb(z)
+    T_rho = Trho_EOS(z)
     
     #print(z, logm200, omega_b/omega_m)
     
@@ -1047,7 +1047,7 @@ def mgas_ludlow(logm200, z):
     omega_m   = cosmo.Om(z)
     rho_bar_b = (rho_crit * omega_b / const.m_p ).to(u.cm**-3).value
     
-    T_rho = T_rho_init(z)
+    T_rho = Trho_init(z)
     
     #print(z, logm200, omega_b/omega_m)
     
@@ -1098,7 +1098,7 @@ def mgas_c(logm200, z, c):
     omega_m   = cosmo.Om(z)
     rho_bar_b = (rho_crit * omega_b / const.m_p ).to(u.cm**-3).value
     
-    T_rho = T_rho_init(z)
+    T_rho = Trho_init(z)
     
     #print(z, logm200, omega_b/omega_m)
     

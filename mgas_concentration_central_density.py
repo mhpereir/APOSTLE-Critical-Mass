@@ -112,7 +112,7 @@ for z in [0,1,2,4,10,12]:
     
     rhob_rhobar = nh_range / rho_bar_b
     
-    T_rho = T_rho_init_adb(z)
+    T_rho = Trho_EOS(z)
     
     ax.plot(lognh_range, np.log10(T_rho(nh_range)), label='z={}'.format(z))
     
