@@ -1,11 +1,9 @@
 import numpy as np
-import pickle
+
 import matplotlib.pyplot as plt
 import matplotlib.colors as colors
 import matplotlib.patches as patches
 from matplotlib.ticker import (MultipleLocator, AutoMinorLocator)
-
-from matplotlib import cm
 
 plt.rcParams['font.size'] = 18
 plt.rcParams['axes.linewidth'] = 3
@@ -13,10 +11,6 @@ plt.rcParams['axes.linewidth'] = 3
 from astropy.cosmology import Planck13 as cosmo
 from astropy import units as u
 from astropy import constants as const
-
-from scipy.interpolate import interp1d, interp2d
-from scipy.integrate import quad
-from scipy.optimize import newton_krylov, brentq, curve_fit
 
 from critical_mass_functions import *
 

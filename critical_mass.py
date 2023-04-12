@@ -1,11 +1,6 @@
 import numpy as np
-import pickle
 import matplotlib.pyplot as plt
-import matplotlib.colors as colors
-import matplotlib.patches as patches
 from matplotlib.ticker import (MultipleLocator, AutoMinorLocator)
-
-from matplotlib import cm
 
 plt.rcParams['font.size'] = 18
 plt.rcParams['axes.linewidth'] = 3
@@ -247,7 +242,7 @@ m200_t200_7000K  = np.log10( (M200(7e3 *u.K, z_range_m200)/const.M_sun).decompos
 
 
 
-tegmark_data = np.genfromtxt('Tegmark_1997.txt', delimiter=', ', skip_header=1)
+tegmark_data = np.genfromtxt('./data/Mcrit_Tegmark_1997.txt', delimiter=', ', skip_header=1)
 
 logz_tegmark = tegmark_data[:,0]
 z_tegmark    = np.power(10, logz_tegmark)-1

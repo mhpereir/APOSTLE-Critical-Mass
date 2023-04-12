@@ -1,12 +1,12 @@
 from __future__ import division
 from scipy.special import cbrt, gammainc, erf
-from scipy.interpolate import interp1d, UnivariateSpline, splrep, splev
+from scipy.interpolate import interp1d, splrep, splev
 import cosmology_functions as cf
 import params
 
 from scipy.interpolate import interp1d, interp2d
 from scipy.integrate import quad
-from scipy.optimize import newton_krylov, brentq, curve_fit
+from scipy.optimize import brentq
 
 import numpy as np
 
@@ -1256,7 +1256,7 @@ def F_inv1(r_til, t200, rho_norm, T_rho, c, g_func, r_norm):
 
 # T-rho EOS
 
-T_rho_BL2020  = np.genfromtxt('./A1_table_BL_2020.txt', delimiter=',')
+T_rho_BL2020  = np.genfromtxt('./data/Trho_BL_2020.txt', delimiter=',')
 
 z_BL2020      = T_rho_BL2020[1:,0]
 log_nH_BL2020 = T_rho_BL2020[0,1:]
@@ -1265,9 +1265,11 @@ log_T_BL2020  = T_rho_BL2020[1:,1:]
 t_from_z       = cosmo.lookback_time(z_BL2020).value
 T_rho_interp_2 = interp2d(log_nH_BL2020, t_from_z, log_T_BL2020, kind='cubic', bounds_error=False)
 
-
-
-def Trho_temp(nT):
+def Trho_ISO_EOS(nT):
+    '''
+    intermediate function that defines the Temperature-Density relation as 
+    Isothermal at 10^4 K except at high density (nH>0.15), where the forced EOS takes over.
+    '''
     nH=np.asarray(nT) * 0.75
     out=np.zeros(len(nH))
     
@@ -1276,36 +1278,28 @@ def Trho_temp(nT):
     
     return out
 
-# def T_rho_init(z):  #n_Total
-    
-#     def T_rho2(rho):
-#         rho = np.asarray(rho) * 0.75  ##input is expected to be total density, 
-#                                       ##but function takes only fractional hydrogen density
-
-#         if rho.shape:
-#             return 10**np.array([T_rho_interp_2(np.log10(rrho), cosmo.lookback_time(z).value) for rrho in rho])
-#         else:
-#             return 10**T_rho_interp_2(np.log10(rho), cosmo.lookback_time(z).value)
-    
-#     return T_rho2
-
-def T_rho_init_adb(z):  #n_Total
-    
+def Trho_EOS(z):  #n_Total
+    '''
+    main function that defines the Temperature-density relation (including the EOS effect enforced in APOSTLE).
+    it returns either of two functions:
+    Trho2 if z<=11.5, which corresponds to an interpolation function of the datatable from Benitez-Llambay 2020 + polytropic EOS effects.
+    Trho_ISO_EOS, Isothermal at 10^4 K except at high density (nH>0.15), where the forced EOS takes over.
+    '''
     mu = 0.6
     cs_eos  = 9.4 * u.km/u.s
     rho_eos = 0.1 * const.m_p / u.cm**3
     
     kappa = 2/3 * (mu**(4/3)) *const.m_p / ((0.1*u.cm**(-3))**(1/3) * const.k_B) * (9.4 *u.km/u.s)**2
 
-    T_adiab   = lambda nH: kappa.to(u.cm*u.K).value * (nH/0.75) **(1/3)
+    T_EOS   = lambda nH: kappa.to(u.cm*u.K).value * (nH/0.75) **(1/3)
     
     if z<= 11.5:
-        def T_rho2(nT):
+        def Trho2(nT):
             nH = np.asarray(nT) * 0.75  ### converts here from N_TOTAL to N_HYDROGEN (factor of 3/4)
 
             if nH.shape: #checks that it's an array (else it's a float)
                 arr_1 = 10**np.array([T_rho_interp_2(np.log10(nnH), cosmo.lookback_time(z).value) for nnH in nH]).flatten()
-                arr_2 = T_adiab(nH) 
+                arr_2 = T_EOS(nH) 
                 arr_final = np.zeros(arr_1.shape)
 
                 arr_final[arr_1 >= arr_2] = arr_1[arr_1 >= arr_2]
@@ -1313,22 +1307,29 @@ def T_rho_init_adb(z):  #n_Total
                 return arr_final
             else:
                 val_1 = 10**T_rho_interp_2(np.log10(nH), cosmo.lookback_time(z).value)
-                val_2 = T_adiab(nH)
+                val_2 = T_EOS(nH)
                 if val_1 >= val_2:
                     return val_1
                 else:
                     return val_2
-        return T_rho2
+        return Trho2
 
     else:
-        return Trho_temp
+        return Trho_ISO_EOS
 
 
-def T_rho_init(z):  #n_Total
-    
+def Trho_init(z):  #n_Total
+    '''
+    main function that defines the Temperature-density relation. Similar to Trho_EOS, except it does not include the 
+    effect of the enforced EOS that is used in APOSTLE. Instead, the Temperature-density relation is assumed to remain isothermal
+    beyond the data included in the datatable of Benitez-Llambay et al. 2020.
+    it returns either of two functions:
+    Trho2 if z<=11.5, which corresponds to an interpolation function of the datatable from Benitez-Llambay 2020.
+    Trho_ISO_EOS, Isothermal at 10^4 K.
+    '''
     if z <= 11.5:
     
-        def T_rho2(nT):
+        def Trho2(nT):
             nH = np.asarray(nT) * 0.75  ### converts here from N_TOTAL to N_HYDROGEN (factor of 3/4)
             
             if nH.shape: #checks that it's an array (else it's a float)
@@ -1342,7 +1343,7 @@ def T_rho_init(z):  #n_Total
     
     else:
         
-        def T_rho2(nT):
+        def Trho2(nT):
             nH = np.asarray(nT) * 0.75
             
             if nH.shape:
@@ -1352,7 +1353,7 @@ def T_rho_init(z):  #n_Total
                 val_1 = np.power(10, 4.0)
                 return val_1
     
-    return T_rho2
+    return Trho2
 
 
 
@@ -1362,6 +1363,10 @@ def T_rho_init(z):  #n_Total
 
 
 def ludlow_concentration(redshift):
+    '''
+    Modified version (by Matthew Pereira Wilson) of a function provided by Aaron Ludlow to 
+    calculate the concentration-mass-redshift relation. 
+    '''
     
     Database      = params.Database
     name          = params.name
