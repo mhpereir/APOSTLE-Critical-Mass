@@ -14,11 +14,7 @@ from astropy.cosmology import Planck13 as cosmo
 from astropy import units as u
 from astropy import constants as const
 
-from scipy.interpolate import interp1d, interp2d
-from scipy.integrate import quad
-from scipy.optimize import newton_krylov, brentq, curve_fit
-
-from critical_mass_functions_2 import *
+from critical_mass_functions import *
 
 from multiprocessing import Pool 
 from time import time
@@ -147,7 +143,7 @@ for i,z in enumerate(z_BL_2020):
 z_range         = np.asarray([0,1,2,3,4,5,6,7,8,9,10,11.5])
 z_range_iso     = np.asarray([11.501, 12.0, 13.0, 14.0, 15.0, 16.0, 18.0, 20.0])
 
-p = Pool(4)
+p = Pool(10)
 
 #calculate critical mass ALEJANDRO
 # Mb/M200, Trho1, c=10

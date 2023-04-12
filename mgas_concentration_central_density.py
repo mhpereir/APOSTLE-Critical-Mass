@@ -64,8 +64,6 @@ for i,z in enumerate(z_BL_2020):
     
     m200_temp = v200_temp(t200)**3 / (const.G * 10 * cosmo.H(z))
     m200_temp = np.log10(m200_temp.decompose() / const.M_sun)
-
-    #print('m200', m200_temp)
     
     m200_Trho_range.append(m200_temp)
     
@@ -76,8 +74,6 @@ for i,z in enumerate(z_BL_2020):
     
     m200_temp = v200_temp(t200)**3 / (const.G * 10 * cosmo.H(z))
     m200_temp = np.log10(m200_temp.decompose() / const.M_sun)
-
-    #print('m200', m200_temp)
     
     m200_iso_range.append(m200_temp)
     
@@ -194,7 +190,7 @@ print(np.log10(clud_central_rho))
 
 fig,ax = plt.subplots(figsize=(7,9), nrows=2, sharex=True, gridspec_kw={'wspace':0., 'hspace':0.0} )
 
-cm = plt.cm.get_cmap('RdYlBu')
+cm = colors.get_cmap('RdYlBu')
 
 #ax.plot(m200_range, mgas_c05_range-m200_range, color=cm( (5 -1)/14 ),  linewidth=3, zorder=6, label='c=5')
 #ax.plot(m200_range, mgas_c10_range-m200_range, color=cm( (10 -1)/14 ), linewidth=3, zorder=5, label='c=10')
