@@ -155,10 +155,12 @@ mcrit_mb_trho1_c10 = [9.702796622321443, 9.521194484923953, 9.293882529958184, 9
 
 c10_range_iso          = np.zeros(len(z_range_iso)) + 10
 T_b_range_iso          = np.zeros(len(z_range_iso)) + 7000 * u.K#10**4. *u.K
-mcrit_mb_trho1_c10_iso = p.map(find_iso_mcrit, zip(z_range_iso, c10_range_iso, T_b_range_iso))
+mcrit_mb_trho1_c10_iso = p.map(find_mcrit_isothermal_mgas_ratio_fixed_concentration, 
+                               zip(z_range_iso, c10_range_iso, T_b_range_iso))
 
 T_b_range_iso           = np.zeros(len(z_range_iso)) + 10**4. *u.K
-mcrit_mb_trho1_c10_iso2 = p.map(find_iso_mcrit, zip(z_range_iso, c10_range_iso, T_b_range_iso))
+mcrit_mb_trho1_c10_iso2 = p.map(find_mcrit_isothermal_mgas_ratio_fixed_concentration, 
+                                zip(z_range_iso, c10_range_iso, T_b_range_iso))
 
 
 
@@ -180,7 +182,8 @@ c10_range_iso   = np.zeros(len(z_range_iso)) + 10
 T_b_range_iso   = np.zeros(len(z_range_iso)) + 10**4. *u.K
 rhoc_range_iso  = np.zeros(len(z_range_iso)) + 10
 
-mcrit_rhoc_trho1_c10_iso = p.map(find_iso_mcrit_2, zip(z_range_iso, c10_range_iso, rhoc_range_iso, T_b_range_iso))
+mcrit_rhoc_trho1_c10_iso = p.map(find_mcrit_isothermal_central_density_fixed_concentration, 
+                                 zip(z_range_iso, c10_range_iso, T_b_range_iso, rhoc_range_iso))
 
 
 

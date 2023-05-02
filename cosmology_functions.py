@@ -1,63 +1,36 @@
-from __future__ import division
 import numpy as np
 
-'''
-This script is from Aaron Ludlow. A script to calculate the Concentration-Mass-Redshift relation 
-to higher redshifts than was possible using the equations provided in Ludlow+2016 (https://doi.org/10.1093/mnras/stw1046).
-'''
+from astropy.cosmology import Planck13 as cosmo
+from astropy import units as u
+from astropy import constants as const
 
-# Constants
 
-G = 43.020 # Mpc/(1e10 M_solar) km^2 / s^2
+def T200(v200):
+    mu = 0.6
+    return (mu * const.m_p / 2 / const.k_B * v200**2).decompose()
 
-# Evolution of the Hubble constant
+def V200(m200,r200):
+    return np.sqrt(const.G * m200 / r200).decompose()
 
-def E(Omega_m0, Omega_l0, z):
-    return np.sqrt( Omega_l0 + Omega_m0 * (1+z)**3 )
+def R200(m200, rho200):
+    return np.power( m200/(4/3*np.pi*rho200), 1/3 ).decompose()
 
-# Evolution of Omega_m
+def RHO200(z):
+    rho_crit = cosmo.critical_density(z)
+    rho200   = rho_crit * 200
+    return rho200.decompose()
 
-def Omz(Omega_m0, Omega_l0, z):
-    return Omega_m0 * (1+z)**3 / (E(Omega_m0, Omega_l0, z)**2)
+def M200(t200, z):
+    mu = 0.6
+    constant = 2 * const.k_B / mu / const.m_p / const.G 
+    
+    return ( (t200.to(u.K) * constant * (4/3 * np.pi * RHO200(z))**(-1/3) )**(3/2) ).decompose()
 
-# Evolution of Omega_l
+def A(c):
+    return np.log(1+c) - c/(1+c)
 
-def Olz(Omega_m0, Omega_l0, z):
-    return Omega_l0 / (E(Omega_m0, Omega_l0, z)**2)
+def NFW_profile(rtil, c, rho):
+    return rho / (3 * A(c) * rtil * (1/c + rtil)**2)
 
-# Evolution of Rho_critical
-
-def Rhocrit_z(Omega_m0, Omega_l0, z):
-    Rhocrit_0 = 3.0/(8.0 * np.pi * G) * 1e4 
-    return Rhocrit_0 * (E(Omega_m0, Omega_l0, z)**2)
-
-# Real-space Tophat in Fourier space 
-
-def TopHat(k, R):
-
-    # k: wavenumber
-    # R: filter size in Mpc/h
-
-    return 3.0/(k*R)**2 * (np.sin(k*R)/(k*R) - np.cos(k*R))
-
-# Integrand that goes in calculation of Sigma(M)
-
-def SigmaIntegrand(k, Pk, R):
-    return k**2 * Pk * TopHat(k, R)**2
-
-def linear_growth_factor(Omega_m0, Omega_l0, z):
-    if len(np.atleast_1d(z)) == 2:
-        z1    = z[0]
-        z2    = z[1] # z2 > z1                                                                                            
-
-    if (len(np.atleast_1d(z)) == 1) or (len(np.atleast_1d(z)) > 2):
-        z1    = 0.
-        z2    = z    # z2 > z1                                                                                           
-             
-    Omega_lz1 = Omega_l0 / (Omega_l0 + Omega_m0 * (1.+z1)**3)
-    Omega_mz1 = 1. - Omega_lz1
-    gz1       = (5./2.) * Omega_mz1 / (Omega_mz1**(4./7.) - Omega_lz1 + (1. + Omega_mz1/2.) * (1. + Omega_lz1/70.))
-    Omega_lz2 = Omega_l0 / (Omega_l0 + Omega_m0 * (1.+z2)**3)
-    Omega_mz2 = 1. - Omega_lz2
-    gz2       = (5./2.) * Omega_mz2 / (Omega_mz2**(4./7.) - Omega_lz2 + (1. + Omega_mz2/2.) * (1. + Omega_lz2/70.))
-    return (gz2 / (1.+z2)) / (gz1 / (1+z1))
+def M_enc(r,c, rho, r200):
+    return 4 * np.pi * r**2. * NFW_profile(r/r200,c, rho).to(u.kg / u.kpc**3).value
